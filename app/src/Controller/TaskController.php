@@ -15,13 +15,31 @@ class TaskController extends AbstractController
     #[Route('/', name: 'app_task')]
     public function index(TaskRepository $taskRepository): Response
     {
+    	$task = $taskRepository->findBy(
+                    ['time_end' => null],
+                );
+    	
+
+    	$currentTask = false;
+    	$time = "00:00:00";
+
+    	if (!empty($task)) {
+    		$currentTask = $task;
+
+    		$interval = date_diff(new \DateTime(), $task[0]->getTimeStart());
+    		$time = $interval->format('%H:%i:%s');
+    	}
+		//dump($taskRepository->findAll());
+    	//die;
         return $this->render('task/index.html.twig', [
+        	'time' => $time,
+			'currentTask' => $currentTask,
             'taskList' => $taskRepository->findAll(),
         ]);
     }
 	
 	#[Route('/start', name: 'start_task', methods: ['GET'])]
-	public function new(TaskRepository $taskRepository, Request $request): Response
+	public function start(TaskRepository $taskRepository, Request $request): Response
     {
     	//dump($request->get('task'));
     	//die;
@@ -36,15 +54,40 @@ class TaskController extends AbstractController
                 );
 		//dump($task);
     	//die;
-		if (!isset($task->id)) {
+		if (empty($task)) {
 			$task = new Task($description);
 			$task->setTimeStart(new \DateTime());
 			
 			$taskRepository->add($task,true);
+		} else {
+			$task = new Task($description);
+			//$task->setTimeStart
 		}
 
-		return $this->render('task/index.html.twig', [
-            'taskList' => $taskRepository->findAll(),
-        ]);
+		return $this->redirectToRoute('app_task');
+    }
+
+    #[Route('/stop', name: 'stop_task', methods: ['GET'])]
+	public function stop(TaskRepository $taskRepository, Request $request): Response
+    {
+		if ($request->get('task')['description']  == null) {
+			return $this->redirectToRoute('app_task');
+		}
+		
+		$description = $request->get('task')['description'];
+		
+		$task = $taskRepository->findBy(
+                    ['description' => $description,
+                    'time_end' => null],
+                );
+		
+		//dump($task);
+    	//die;
+
+    	$task[0]->setTimeEnd(new \DateTime());
+
+    	$taskRepository->add($task[0],true);
+
+		return $this->redirectToRoute('app_task');
     }
 }

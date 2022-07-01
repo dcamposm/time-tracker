@@ -29,6 +29,18 @@ class TaskRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
+	
+	public function finByDescriptionAnd($description, $time_start): ?Task
+    {
+        return $this->createQueryBuilder('t')
+           ->andWhere('t.description = :description')
+           ->andWhere('t.time_start = :time_start')
+           ->setParameter('description', $description)
+           ->setParameter('time_start', $time_start)
+           ->getQuery()
+           ->getOneOrNullResult()
+		;
+    }
 
     public function remove(Task $entity, bool $flush = false): void
     {

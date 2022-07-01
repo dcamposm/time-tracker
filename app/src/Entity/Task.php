@@ -60,7 +60,7 @@ class Task
 
     public function getTimeStart(): ?\DateTimeInterface
     {
-        return $this->time_start->date;
+        return $this->time_start;
     }
 
     public function setTimeStart(\DateTimeInterface $time_start): self
@@ -83,7 +83,10 @@ class Task
     }
 
     public function calcHours() {
-       if ($this->time_end !== null) return date_diff($this->time_start, $this->time_end);
+       if ($this->time_end !== null) {
+            $interval = date_diff($this->time_start, $this->time_end);
+            return $interval->format('%H:%i:%s');
+       } 
        
        return "";
     }

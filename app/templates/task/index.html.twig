@@ -8,16 +8,25 @@
 	<span class="fs-5">BY DEMETRIO CAMPOS</span>
 </div>
 <main  class="container">
-	<div class="m-5 fs-1 d-flex justify-content-center">
-		00:00:00
-	</div>
-	<form class="m-5" method="get" action="{{ path('start_task') }}">
-		<div class="d-flex justify-content-evenly m-5">
-			<button class="btn btn-outline-success fs-2 ps-5 pe-5" id="start" type="submit">Start</button>
-			<button class="btn btn-outline-danger fs-2 ps-5 pe-5 hidden">Stop</button>
-		</div>
-		<input type="text" name="task[description]" class="form-control fs-2" placeholder="Insert your Task ..." aria-label="Insert your Task ..." aria-describedby="basic-addon1">
-	</form>
+	
+    {% if currentTask == false %}
+    	<form class="m-5" method="get" action="{{ path('start_task') }}">
+    		<div class="d-flex justify-content-evenly m-5">
+    			<button class="btn btn-outline-success fs-2 ps-5 pe-5" id="start" type="submit">Start</button>
+    		</div>
+    		<input type="text" name="task[description]" class="form-control fs-2" placeholder="Insert your Task ..." aria-label="Insert your Task ..." aria-describedby="basic-addon1">
+    	</form>
+    {% else %}
+        <div class="m-5 fs-1 d-flex justify-content-center" id="time" data-chronometer>
+            {{ time }}
+        </div>
+        <form class="m-5" method="get" action="{{ path('stop_task') }}">
+            <div class="d-flex justify-content-evenly m-5">
+                <button class="btn btn-outline-danger fs-2 ps-5 pe-5">Stop</button>
+            </div>
+            <input type="text" name="task[description]" class="form-control fs-2" placeholder="Insert your Task ..." aria-label="Insert your Task ..." aria-describedby="basic-addon1" value="{{ currentTask[0].description }}" readonly>
+        </form>
+    {% endif %}
     <table class="table fs-3">
         <thead>
             <tr>
