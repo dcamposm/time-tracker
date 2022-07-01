@@ -1,20 +1,44 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TaskController!{% endblock %}
+{% block title %}Time Tracker{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code><a href="{{ '/var/www/time-tracker/src/Controller/TaskController.php'|file_link(0) }}">src/Controller/TaskController.php</a></code></li>
-        <li>Your template at <code><a href="{{ '/var/www/time-tracker/templates/task/index.html.twig'|file_link(0) }}">templates/task/index.html.twig</a></code></li>
-    </ul>
+<div class="fs-1 d-flex justify-content-center bg-primary p-5 text-white flex-column text-center">
+	<h1>TIME TRACKER</h1>
+	<span class="fs-5">BY DEMETRIO CAMPOS</span>
 </div>
+<main  class="container">
+	<div class="m-5 fs-1 d-flex justify-content-center">
+		00:00:00
+	</div>
+	<form class="m-5" method="get" action="{{ path('start_task') }}">
+		<div class="d-flex justify-content-evenly m-5">
+			<button class="btn btn-outline-success fs-2 ps-5 pe-5" id="start" type="submit">Start</button>
+			<button class="btn btn-outline-danger fs-2 ps-5 pe-5 hidden">Stop</button>
+		</div>
+		<input type="text" name="task[description]" class="form-control fs-2" placeholder="Insert your Task ..." aria-label="Insert your Task ..." aria-describedby="basic-addon1">
+	</form>
+    <table class="table fs-3">
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Time</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for task in taskList %}
+            <tr>
+                <td>{{ task.description }}</td>
+                <td>{{ task.calcHours }}</td>
+                <td>{{ task.date }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</main >
 {% endblock %}

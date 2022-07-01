@@ -14,7 +14,7 @@ class Task
     private $id;
 
     #[ORM\Column(type: 'integer')]
-    private $id_user;
+    private $id_user = 0;
 
     #[ORM\Column(type: 'string', length: 255)]
     private $description;
@@ -25,11 +25,8 @@ class Task
     #[ORM\Column(type: 'datetime', nullable: true)]
     private $time_end;
 	
-	public function __construct($id_user, $description, $time_start, $time_end = null) {
-		$this->id_user = $id_user;
+	public function __construct($description) {
 		$this->description = $description;
-		$this->time_start = $time_start;
-		$this->time_end = $time_end;
 	}
 	
     public function getId(): ?int
@@ -63,7 +60,7 @@ class Task
 
     public function getTimeStart(): ?\DateTimeInterface
     {
-        return $this->time_start;
+        return $this->time_start->date;
     }
 
     public function setTimeStart(\DateTimeInterface $time_start): self
@@ -83,5 +80,15 @@ class Task
         $this->time_end = $time_end;
 
         return $this;
+    }
+
+    public function calcHours() {
+       if ($this->time_end !== null) return date_diff($this->time_start, $this->time_end);
+       
+       return "";
+    }
+
+    public function date() {
+       return $this->time_start->format('Y-m-d');
     }
 }
