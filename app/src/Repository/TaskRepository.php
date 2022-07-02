@@ -30,16 +30,20 @@ class TaskRepository extends ServiceEntityRepository
         }
     }
 	
-	public function finByDescriptionAnd($description, $time_start): ?Task
+	public function findFormatedSumHours(): ?array
     {
-        return $this->createQueryBuilder('t')
-           ->andWhere('t.description = :description')
-           ->andWhere('t.time_start = :time_start')
-           ->setParameter('description', $description)
-           ->setParameter('time_start', $time_start)
-           ->getQuery()
-           ->getOneOrNullResult()
-		;
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+                SELECT description, 
+                    DATE_FORMAT(SEC_TO_TIME((SUM(TIME_TO_SEC(time_end)) - SUM(TIME_TO_SEC(time_start)))),"%H.%i") as time,  DATE_FORMAT(time_start, "%Y-%m-%d") as date
+                FROM task 
+                WHERE time_end IS NOT NULL
+                GROUP BY description, DATE_FORMAT(time_start, "%Y-%m-%d"), DATE_FORMAT(time_end, "%Y-%m-%d")';
+
+        $stmt = $conn->prepare($sql);
+
+        return $stmt->executeQuery()->fetchAllAssociative();;
     }
 
     public function remove(Task $entity, bool $flush = false): void

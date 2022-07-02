@@ -24,7 +24,7 @@
             <div class="d-flex justify-content-evenly m-5">
                 <button class="btn btn-outline-danger fs-2 ps-5 pe-5">Stop</button>
             </div>
-            <input type="text" name="task[description]" class="form-control fs-2" placeholder="Insert your Task ..." aria-label="Insert your Task ..." aria-describedby="basic-addon1" value="{{ currentTask[0].description }}" readonly>
+            <input type="text" name="task[description]" class="form-control fs-2" placeholder="Insert your Task ..." aria-label="Insert your Task ..." aria-describedby="basic-addon1" value="{{ currentTask.description }}" readonly>
         </form>
     {% endif %}
     <table class="table fs-3">
@@ -39,7 +39,7 @@
         {% for task in taskList %}
             <tr>
                 <td>{{ task.description }}</td>
-                <td>{{ task.calcHours }}</td>
+                <td>{{ task.time }}h</td>
                 <td>{{ task.date }}</td>
             </tr>
         {% else %}

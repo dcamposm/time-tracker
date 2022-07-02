@@ -15,7 +15,7 @@ class TaskController extends AbstractController
     #[Route('/', name: 'app_task')]
     public function index(TaskRepository $taskRepository): Response
     {
-    	$task = $taskRepository->findBy(
+    	$task = $taskRepository->findOneBy(
                     ['time_end' => null],
                 );
     	
@@ -26,15 +26,15 @@ class TaskController extends AbstractController
     	if (!empty($task)) {
     		$currentTask = $task;
 
-    		$interval = date_diff(new \DateTime(), $task[0]->getTimeStart());
+    		$interval = date_diff(new \DateTime(), $task->getTimeStart());
     		$time = $interval->format('%H:%i:%s');
     	}
-		//dump($taskRepository->findAll());
+		//dump($currentTask );
     	//die;
         return $this->render('task/index.html.twig', [
         	'time' => $time,
 			'currentTask' => $currentTask,
-            'taskList' => $taskRepository->findAll(),
+            'taskList' => $taskRepository->findFormatedSumHours(),
         ]);
     }
 	
@@ -48,21 +48,14 @@ class TaskController extends AbstractController
 		}
 		
 		$description = $request->get('task')['description'];
-		
-		$task = $taskRepository->findBy(
-                    ['description' => $description],
-                );
+
 		//dump($task);
     	//die;
-		if (empty($task)) {
-			$task = new Task($description);
-			$task->setTimeStart(new \DateTime());
-			
-			$taskRepository->add($task,true);
-		} else {
-			$task = new Task($description);
-			//$task->setTimeStart
-		}
+		
+		$task = new Task($description);
+		$task->setTimeStart(new \DateTime());
+		
+		$taskRepository->add($task,true);
 
 		return $this->redirectToRoute('app_task');
     }
@@ -76,7 +69,7 @@ class TaskController extends AbstractController
 		
 		$description = $request->get('task')['description'];
 		
-		$task = $taskRepository->findBy(
+		$task = $taskRepository->findOneBy(
                     ['description' => $description,
                     'time_end' => null],
                 );
@@ -84,9 +77,12 @@ class TaskController extends AbstractController
 		//dump($task);
     	//die;
 
-    	$task[0]->setTimeEnd(new \DateTime());
+		if (!empty($task)) {
+	    	$task->setTimeEnd(new \DateTime());
 
-    	$taskRepository->add($task[0],true);
+	    	$taskRepository->add($task,true);	
+		}
+
 
 		return $this->redirectToRoute('app_task');
     }
