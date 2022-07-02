@@ -19,7 +19,6 @@ class TaskController extends AbstractController
                     ['time_end' => null],
                 );
     	
-
     	$currentTask = false;
     	$time = "00:00:00";
 
@@ -29,29 +28,25 @@ class TaskController extends AbstractController
     		$interval = date_diff(new \DateTime(), $task->getTimeStart());
     		$time = $interval->format('%H:%i:%s');
     	}
-		//dump($currentTask );
-    	//die;
+
         return $this->render('task/index.html.twig', [
         	'time' => $time,
 			'currentTask' => $currentTask,
             'taskList' => $taskRepository->findFormatedSumHours(),
         ]);
     }
-	
+	/**
+	 * Start Function, create task and set time_start
+	**/
 	#[Route('/start', name: 'start_task', methods: ['GET'])]
 	public function start(TaskRepository $taskRepository, Request $request): Response
     {
-    	//dump($request->get('task'));
-    	//die;
 		if ($request->get('task')['description']  == null) {
 			return $this->redirectToRoute('app_task');
 		}
 		
 		$description = $request->get('task')['description'];
 
-		//dump($task);
-    	//die;
-		
 		$task = new Task($description);
 		$task->setTimeStart(new \DateTime());
 		
@@ -59,7 +54,9 @@ class TaskController extends AbstractController
 
 		return $this->redirectToRoute('app_task');
     }
-
+    /**
+	 * Stop Function, update task and set time_stop
+	**/
     #[Route('/stop', name: 'stop_task', methods: ['GET'])]
 	public function stop(TaskRepository $taskRepository, Request $request): Response
     {
@@ -74,9 +71,6 @@ class TaskController extends AbstractController
                     'time_end' => null],
                 );
 		
-		//dump($task);
-    	//die;
-
 		if (!empty($task)) {
 	    	$task->setTimeEnd(new \DateTime());
 

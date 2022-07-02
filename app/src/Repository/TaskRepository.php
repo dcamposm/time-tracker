@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Task;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @extends ServiceEntityRepository<Task>
@@ -29,8 +30,12 @@ class TaskRepository extends ServiceEntityRepository
             $this->getEntityManager()->flush();
         }
     }
-	
-	public function findFormatedSumHours(): ?array
+
+	/**
+     * Display the task with the sum of task hours of different days
+    **/
+
+	public function findFormatedSumHours($currentPage = 1): ?array
     {
         $conn = $this->getEntityManager()->getConnection();
 
@@ -39,7 +44,8 @@ class TaskRepository extends ServiceEntityRepository
                     DATE_FORMAT(SEC_TO_TIME((SUM(TIME_TO_SEC(time_end)) - SUM(TIME_TO_SEC(time_start)))),"%H.%i") as time,  DATE_FORMAT(time_start, "%Y-%m-%d") as date
                 FROM task 
                 WHERE time_end IS NOT NULL
-                GROUP BY description, DATE_FORMAT(time_start, "%Y-%m-%d"), DATE_FORMAT(time_end, "%Y-%m-%d")';
+                GROUP BY description, DATE_FORMAT(time_start, "%Y-%m-%d"), DATE_FORMAT(time_end, "%Y-%m-%d")
+                ORDER BY date DESC';
 
         $stmt = $conn->prepare($sql);
 
